@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org">
+<head th:insert="~{head :: common-head}"></head>
+<body>
+<div class="container loading">
+    <span aria-busy="true">Loading...</span>
+</div>
+<script th:inline="javascript">
+    let csrfToken = /*[[${_csrf.token}]]*/ 'default';
+    fetch('/loginTelegram', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({initData: window.Telegram.WebApp.initData})
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Auth error');
+            }
+            return response.json();
+        })
+        .then(data => {
+            window.location.href = '/';
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            document.querySelector('.container.loading').textContent = error.message;
+        });
+</script>
+</body>
+</html>

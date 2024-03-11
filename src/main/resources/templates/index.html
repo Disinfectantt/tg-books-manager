@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org">
+<head th:insert="~{head :: common-head}"></head>
+<body>
+<div hx-get="/" hx-trigger="load">
+    <div class="container loading">
+        <span aria-busy="true">Loading...</span>
+    </div>
+</div>
+</body>
+</html>

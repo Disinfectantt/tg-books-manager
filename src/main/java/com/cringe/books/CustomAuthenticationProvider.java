@@ -1,0 +1,59 @@
+package com.cringe.books;
+
+import org.apache.commons.codec.digest.HmacUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+
+@Component
+public class CustomAuthenticationProvider implements AuthenticationProvider {
+    private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
+
+    @Value("${botToken}")
+    private String botToken;
+
+    @Override
+    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
+        TreeMap<String, String> params = ((CustomAuthenticationToken) authentication).getParams();
+        String hash = params.get("hash");
+        if (!params.containsKey("id") || !params.containsKey("auth_date") || hash == null) {
+            throw new BadCredentialsException("Hash, id, or auth_date is null");
+        }
+        params.remove("hash");
+        if (!checkTgHash(hash, params)) {
+            // TODO fix telegram hash check
+            throw new BadCredentialsException("Hash does not match");
+        }
+        return new CustomAuthenticationToken(params, true);
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.equals(CustomAuthenticationToken.class);
+    }
+
+    protected boolean checkTgHash(String hash, TreeMap<String, String> params) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> entry = iterator.next();
+            sb.append(entry.getKey()).append("=").append(entry.getValue());
+            if (iterator.hasNext()) {
+                sb.append("\n");
+            }
+        }
+        byte[] secretKey = new HmacUtils("HmacSHA256", "WebAppData").hmac(botToken);
+        String hashCalculated = new HmacUtils("HmacSHA256", secretKey).hmacHex(sb.toString());
+        return hash.equals(hashCalculated);
+    }
+
+}
