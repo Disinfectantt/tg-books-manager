@@ -5,7 +5,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import java.util.TreeMap;
 
 public class CustomAuthenticationToken extends AbstractAuthenticationToken {
-    private final TreeMap<String, String> params;
+    private TreeMap<String, String> params;
 
     public CustomAuthenticationToken(TreeMap<String, String> params, boolean isAuth) {
         super(null);
@@ -26,4 +26,9 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
     public TreeMap<String, String> getParams() {
         return params;
     }
+
+    public void setParams(TreeMap<String, String> params) {
+        this.params = params;
+    }
+
 }

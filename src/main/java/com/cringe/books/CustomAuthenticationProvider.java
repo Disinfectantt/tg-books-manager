@@ -25,12 +25,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         TreeMap<String, String> params = ((CustomAuthenticationToken) authentication).getParams();
         String hash = params.get("hash");
-        if (!params.containsKey("id") || !params.containsKey("auth_date") || hash == null) {
-            throw new BadCredentialsException("Hash, id, or auth_date is null");
+        if (!params.containsKey("auth_date") || !params.containsKey("user") || hash == null) {
+            throw new BadCredentialsException("Hash, user, or auth_date is null");
         }
         params.remove("hash");
         if (!checkTgHash(hash, params)) {
-            // TODO fix telegram hash check
             throw new BadCredentialsException("Hash does not match");
         }
         return new CustomAuthenticationToken(params, true);

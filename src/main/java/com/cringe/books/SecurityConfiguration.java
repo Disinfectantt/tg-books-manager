@@ -1,5 +1,7 @@
 package com.cringe.books;
 
+import com.cringe.books.handler.CustomAuthenticationFailureHandler;
+import com.cringe.books.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,11 +21,12 @@ import java.util.Collections;
 public class SecurityConfiguration extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     private final AuthenticationFailureHandler failureHandler = new CustomAuthenticationFailureHandler();
-
     private final CustomAuthenticationProvider authProvider;
+    private final UserService userService;
 
-    public SecurityConfiguration(CustomAuthenticationProvider authProvider) {
+    public SecurityConfiguration(CustomAuthenticationProvider authProvider, UserService userService) {
         this.authProvider = authProvider;
+        this.userService = userService;
     }
 
     @Bean
@@ -40,7 +43,8 @@ public class SecurityConfiguration extends SecurityConfigurerAdapter<DefaultSecu
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(new CustomAuthenticationFilter(authenticationManager()), BasicAuthenticationFilter.class)
+                .addFilterBefore(new CustomAuthenticationFilter(authenticationManager(), userService),
+                        BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/*.js", "/*.css").permitAll()
                         .anyRequest().authenticated()

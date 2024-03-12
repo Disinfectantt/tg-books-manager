@@ -1,5 +1,8 @@
 package com.cringe.books;
 
+import com.cringe.books.handler.CustomAuthenticationFailureHandler;
+import com.cringe.books.handler.CustomAuthenticationSuccessHandler;
+import com.cringe.books.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.TreeMap;
 
 @Component
@@ -24,17 +26,17 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
 
     private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super("/loginTelegram", authenticationManager);
         setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
+        setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler(userService));
     }
 
     @Override
     public Authentication attemptAuthentication(
             HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        if (!request.getMethod().equals("POST")) {
-            // TODO check json header
-            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+        if (!request.getMethod().equals("POST") || !request.getHeader("Content-Type").equals("application/json")) {
+            throw new AuthenticationServiceException("Authentication method not supported");
         }
         TreeMap<String, String> params;
         try {
@@ -48,14 +50,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         for (String element : elements) {
             String[] tmp = element.split("=");
             if (tmp.length > 1) {
-                try {
-                    Map<String, String> jsonMap = new ObjectMapper().readValue(tmp[1], new TypeReference<Map<String, String>>() {
-                    });
-                    params.putAll(jsonMap);
-                    params.putAll(jsonMap);
-                } catch (IOException e) {
-                    params.put(tmp[0], tmp[1]);
-                }
+                params.put(tmp[0], tmp[1]);
             } else {
                 params.put(tmp[0], "");
             }
