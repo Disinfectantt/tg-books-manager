@@ -1,5 +1,6 @@
 package com.cringe.books.filter;
 
+import com.cringe.books.JwtMain;
 import com.cringe.books.handler.CustomAuthenticationFailureHandler;
 import com.cringe.books.handler.CustomAuthenticationSuccessHandler;
 import com.cringe.books.provider.CustomAuthenticationProvider;
@@ -28,10 +29,11 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
 
     private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService,
+                                      JwtMain jwtMain) {
         super("/loginTelegram", authenticationManager);
         setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
-        setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler(userService));
+        setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler(userService, jwtMain));
     }
 
     @Override
