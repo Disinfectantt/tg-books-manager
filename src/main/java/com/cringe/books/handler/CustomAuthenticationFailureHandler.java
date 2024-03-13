@@ -1,6 +1,6 @@
 package com.cringe.books.handler;
 
-import com.cringe.books.CustomAuthenticationProvider;
+import com.cringe.books.provider.CustomAuthenticationProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

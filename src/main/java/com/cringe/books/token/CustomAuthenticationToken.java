@@ -1,4 +1,4 @@
-package com.cringe.books;
+package com.cringe.books.token;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

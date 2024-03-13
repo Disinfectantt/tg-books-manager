@@ -1,7 +1,7 @@
 package com.cringe.books.handler;
 
-import com.cringe.books.CustomAuthenticationProvider;
-import com.cringe.books.CustomAuthenticationToken;
+import com.cringe.books.provider.CustomAuthenticationProvider;
+import com.cringe.books.token.CustomAuthenticationToken;
 import com.cringe.books.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

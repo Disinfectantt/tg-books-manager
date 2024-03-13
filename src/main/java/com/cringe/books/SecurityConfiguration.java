@@ -1,6 +1,8 @@
 package com.cringe.books;
 
+import com.cringe.books.filter.CustomAuthenticationFilter;
 import com.cringe.books.handler.CustomAuthenticationFailureHandler;
+import com.cringe.books.provider.CustomAuthenticationProvider;
 import com.cringe.books.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

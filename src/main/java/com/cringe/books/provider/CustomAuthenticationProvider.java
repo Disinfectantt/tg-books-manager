@@ -1,5 +1,6 @@
-package com.cringe.books;
+package com.cringe.books.provider;
 
+import com.cringe.books.token.CustomAuthenticationToken;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
