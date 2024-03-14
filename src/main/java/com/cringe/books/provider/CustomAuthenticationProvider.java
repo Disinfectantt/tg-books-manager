@@ -1,6 +1,9 @@
 package com.cringe.books.provider;
 
+import com.cringe.books.service.UserService;
 import com.cringe.books.token.CustomAuthenticationToken;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -18,9 +22,13 @@ import java.util.TreeMap;
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
-
+    private final UserService userService;
     @Value("${botToken}")
     private String botToken;
+
+    public CustomAuthenticationProvider(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
@@ -33,7 +41,19 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if (!checkTgHash(hash, params)) {
             throw new BadCredentialsException("Hash does not match");
         }
-        return new CustomAuthenticationToken(params, true);
+        TreeMap<String, String> userJson;
+        try {
+            userJson = new ObjectMapper().readValue(params.get("user"), new TypeReference<TreeMap<String, String>>() {
+            });
+        } catch (IOException | NumberFormatException e) {
+            logger.error(e.getMessage());
+            throw new BadCredentialsException("User field invalid");
+        }
+        Long id = Long.parseLong(userJson.get("id"));
+        if (userService.isWhitelist() && !userService.isInWhitelist(id)) {
+            throw new BadCredentialsException("You are not in whitelist");
+        }
+        return new CustomAuthenticationToken(userJson, true);
     }
 
     @Override

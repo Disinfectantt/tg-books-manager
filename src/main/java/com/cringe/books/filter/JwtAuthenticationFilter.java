@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         String jwt = getJwtFromCookie(request);
-        String id = null;
+        String id;
         if (jwt == null) {
             response.sendRedirect("/login");
             return;
