@@ -1,6 +1,10 @@
-.container.loading {
+.container.center {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+}
+
+.edit-book-btn-wrapper {
+    gap: 1rem;
 }

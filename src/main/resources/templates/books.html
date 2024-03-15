@@ -1,1 +1,6 @@
-<p>works</p>
+<div class="container">
+    <article th:attr="id='book-edit-wrapper' + ${book.getId()}"
+             th:each="book : ${books}">
+        <div th:replace="~{editBook :: bookForm(${book})}"></div>
+    </article>
+</div>

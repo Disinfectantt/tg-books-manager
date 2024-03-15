@@ -1,0 +1,33 @@
+<!--TODO form updates full page ?????? -->
+<form hx-get="/editBook"
+      hx-trigger="submit"
+      th:fragment="bookForm (book)">
+    <label>Author
+        <input
+                maxlength="100"
+                name="author"
+                th:value="${book.getAuthor()}"
+                type="text"
+        >
+    </label>
+    <label>Title
+        <input
+                maxlength="100"
+                name="name"
+                th:value="${book.getName()}"
+                type="text"
+        >
+    </label>
+    <input name="id" th:value="${book.getId()}" type="hidden">
+    <div class="edit-book-btn-wrapper" role="group">
+        <button type="submit">Edit</button>
+        <button class="btn-del"
+                hx-swap="outerHTML"
+                hx-trigger="click"
+                th:attr="hx-get='/delBook/' + ${book.getId()},
+                hx-target='#book-edit-wrapper' + ${book.getId()}"
+                type="button">
+            Delete
+        </button>
+    </div>
+</form>

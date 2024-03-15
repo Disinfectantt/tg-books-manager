@@ -3,8 +3,8 @@
       xmlns:th="https://www.thymeleaf.org">
 <head th:replace="~{head :: common-head}"></head>
 <body>
-<div hx-get="/" hx-trigger="load">
-    <div class="container loading">
+<div hx-get="/getBooks" hx-trigger="load">
+    <div class="container center">
         <span aria-busy="true">Loading...</span>
     </div>
 </div>

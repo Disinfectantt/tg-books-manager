@@ -20,7 +20,7 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return null;
+        return params.get("id");
     }
 
     public TreeMap<String, String> getParams() {

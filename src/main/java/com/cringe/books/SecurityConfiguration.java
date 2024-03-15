@@ -4,7 +4,6 @@ import com.cringe.books.filter.CustomAuthenticationFilter;
 import com.cringe.books.filter.JwtAuthenticationFilter;
 import com.cringe.books.handler.CustomAuthenticationFailureHandler;
 import com.cringe.books.provider.CustomAuthenticationProvider;
-import com.cringe.books.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,17 +24,17 @@ public class SecurityConfiguration extends SecurityConfigurerAdapter<DefaultSecu
 
     private final CustomAuthenticationFailureHandler failureHandler;
     private final CustomAuthenticationProvider authProvider;
-    private final UserService userService;
-    private final JwtMain jwtMain;
+    private final CustomAuthenticationFilter customAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfiguration(CustomAuthenticationProvider authProvider,
-                                 UserService userService,
-                                 JwtMain jwtMain,
-                                 CustomAuthenticationFailureHandler failureHandler) {
+                                 CustomAuthenticationFailureHandler failureHandler,
+                                 CustomAuthenticationFilter customAuthenticationFilter,
+                                 JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.authProvider = authProvider;
-        this.userService = userService;
-        this.jwtMain = jwtMain;
         this.failureHandler = failureHandler;
+        this.customAuthenticationFilter = customAuthenticationFilter;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -59,10 +58,10 @@ public class SecurityConfiguration extends SecurityConfigurerAdapter<DefaultSecu
                         .loginPage("/login")
                         .failureHandler(failureHandler)
                         .permitAll())
-                .addFilterBefore(new CustomAuthenticationFilter(authenticationManager(), userService,
-                                jwtMain),
+                .addFilterBefore(customAuthenticationFilter,
                         BasicAuthenticationFilter.class)
-                .addFilterAfter(new JwtAuthenticationFilter(jwtMain), BasicAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter,
+                        BasicAuthenticationFilter.class)
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();

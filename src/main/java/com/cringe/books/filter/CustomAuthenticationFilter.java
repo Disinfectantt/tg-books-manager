@@ -1,10 +1,8 @@
 package com.cringe.books.filter;
 
-import com.cringe.books.JwtMain;
 import com.cringe.books.handler.CustomAuthenticationFailureHandler;
 import com.cringe.books.handler.CustomAuthenticationSuccessHandler;
 import com.cringe.books.provider.CustomAuthenticationProvider;
-import com.cringe.books.service.UserService;
 import com.cringe.books.token.CustomAuthenticationToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -29,11 +29,14 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
 
     private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService,
-                                      JwtMain jwtMain) {
+    @Autowired
+    @Lazy
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
+                                      CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
+                                      CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         super("/loginTelegram", authenticationManager);
-        setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
-        setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler(userService, jwtMain));
+        setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+        setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
     }
 
     @Override
