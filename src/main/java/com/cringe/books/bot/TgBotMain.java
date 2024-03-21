@@ -32,12 +32,8 @@ public class TgBotMain extends TelegramLongPollingBot {
                 if (msgTxt.equalsIgnoreCase("/start")) {
                     userService.addUser(userId);
                 }
-                try {
-                    sendMsg(update.getMessage().getChatId(),
-                            "Welcome! Send me a photo of your book");
-                } catch (TelegramApiException e) {
-                    logger.info(e.getMessage());
-                }
+                sendMsg(update.getMessage().getChatId(),
+                        "Welcome! Send me a photo of your book");
             } else if (update.getMessage().hasPhoto()) {
                 if (userService.isWhitelist() && !userService.isInWhitelist(userId)) {
                     return;
@@ -53,11 +49,15 @@ public class TgBotMain extends TelegramLongPollingBot {
         return botConfig.getBotName();
     }
 
-    private void sendMsg(Long chatId, String msg) throws TelegramApiException {
+    private void sendMsg(Long chatId, String msg) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(msg);
-        execute(message);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            logger.info(e.getMessage());
+        }
     }
 
 }
